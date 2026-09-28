@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+:root {
+  --gold: #AC7121;
+  --gold-text: #8A5A17;
+  --sand: #EBC796;
+  --forest: #224738;
+  --forest-hover: #1B3A2E;
+  --ink: #111111;
+  --ink-muted: #6B665E;
+  --ink-raised: #1B1B1B;
+  --paper: #F5F5F4;
+  --surface: #FFFFFF;
+  --beige: #E2DBCD;
+  --cream: #FFF9F1;
+
+  --status-reject-bg: #FBEAE7;
+  --status-reject-text: #9B2C1F;
+  --status-reject-border: #F6CECA;
+
+  --status-hold-bg: #FDF1D8;
+  --status-hold-text: #8A5A0B;
+  --status-hold-border: #F8E1B3;
+
+  --status-send-bg: #E3EFE9;
+  --status-send-text: #224738;
+  --status-send-border: #C6DFD3;
+
+  --status-neutral-bg: #EFEAE0;
+  --status-neutral-text: #4A4438;
+  --status-neutral-border: #DFD7C7;
+}
+
+@theme {
+  --color-gold: var(--gold);
+  --color-gold-text: var(--gold-text);
+  --color-sand: var(--sand);
+  --color-forest: var(--forest);
+  --color-forest-hover: var(--forest-hover);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-raised: var(--ink-raised);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-beige: var(--beige);
+  --color-cream: var(--cream);
+
+  --color-status-reject-bg: var(--status-reject-bg);
+  --color-status-reject-text: var(--status-reject-text);
+  --color-status-reject-border: var(--status-reject-border);
+
+  --color-status-hold-bg: var(--status-hold-bg);
+  --color-status-hold-text: var(--status-hold-text);
+  --color-status-hold-border: var(--status-hold-border);
+
+  --color-status-send-bg: var(--status-send-bg);
+  --color-status-send-text: var(--status-send-text);
+  --color-status-send-border: var(--status-send-border);
+
+  --color-status-neutral-bg: var(--status-neutral-bg);
+  --color-status-neutral-text: var(--status-neutral-text);
+  --color-status-neutral-border: var(--status-neutral-border);
+
+  --font-serif: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-sans: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--sand);
+  color: var(--ink);
+}
+
+.tdc-card {
+  background-color: var(--surface);
+  border: 1px solid var(--beige);
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 2px 0 rgba(17, 17, 17, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tdc-card:hover {
+  border-color: #CBBFA8;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: var(--forest);
+  cursor: pointer;
+  border: 2px solid var(--surface);
+  box-shadow: 0 1px 3px rgba(17, 17, 17, 0.25);
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: var(--forest);
+  cursor: pointer;
+  border: 2px solid var(--surface);
+  box-shadow: 0 1px 3px rgba(17, 17, 17, 0.25);
+}
+
