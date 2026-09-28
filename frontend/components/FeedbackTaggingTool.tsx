@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Client, TagFeedbackResponse } from "../types";
+import { tagFeedback, attachRejectionRecord } from "../lib/api";
 import {
   ArrowRight,
   Check,
@@ -61,17 +62,11 @@ export const FeedbackTaggingTool: React.FC<FeedbackTaggingToolProps> = ({
     setSavedSuccess(false);
 
     try {
-      const res = await fetch("/api/tag-feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawFeedback: textToClassify }),
-      });
-      if (!res.ok) throw new Error("Classification request failed");
-      const data: TagFeedbackResponse = await res.json();
+      const data = await tagFeedback(textToClassify);
       setResult(data);
     } catch (err: any) {
       console.error(err);
-      setErrorMsg("Failed to classify feedback. Ensure backend is running.");
+      setErrorMsg("Failed to classify feedback. Ensure backend is available.");
     } finally {
       setIsLoading(false);
     }
@@ -80,15 +75,10 @@ export const FeedbackTaggingTool: React.FC<FeedbackTaggingToolProps> = ({
   const handleAttachToClient = async () => {
     if (!result || !selectedClientId) return;
     try {
-      const res = await fetch(`/api/clients/${selectedClientId}/rejections`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          rawFeedback: feedbackText,
-          stage,
-        }),
+      await attachRejectionRecord(selectedClientId, {
+        rawFeedback: feedbackText,
+        stage,
       });
-      if (!res.ok) throw new Error("Failed to attach to client");
       setSavedSuccess(true);
       if (onFeedbackSavedToClient) {
         onFeedbackSavedToClient();

@@ -2,6 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { Client, Matchmaker, ScoreResult } from "../types";
+import {
+  getClients,
+  getMatchmakers,
+  getScoredCandidates,
+  updateMatchmakerThreshold,
+} from "../lib/api";
 import { ClientHeader } from "../components/ClientHeader";
 import { ThresholdController } from "../components/ThresholdController";
 import { CandidateCard } from "../components/CandidateCard";
@@ -33,17 +39,10 @@ export default function Home() {
     async function initData() {
       try {
         setIsLoading(true);
-        const [clientsRes, mmRes] = await Promise.all([
-          fetch("/api/clients"),
-          fetch("/api/matchmakers"),
+        const [clientsData, mmData] = await Promise.all([
+          getClients(),
+          getMatchmakers(),
         ]);
-
-        if (!clientsRes.ok || !mmRes.ok) {
-          throw new Error("Failed to load initial data from backend API");
-        }
-
-        const clientsData: Client[] = await clientsRes.json();
-        const mmData: Matchmaker[] = await mmRes.json();
 
         setClients(clientsData);
         setMatchmakers(mmData);
@@ -56,7 +55,7 @@ export default function Home() {
         }
       } catch (err: any) {
         console.error(err);
-        setError("Unable to connect to backend API on http://localhost:4000. Please ensure the backend is running.");
+        setError("Unable to connect to backend API at https://thedatecrew-s8j9.onrender.com. Please ensure the backend is available.");
       } finally {
         setIsLoading(false);
       }
@@ -69,11 +68,7 @@ export default function Home() {
     if (!clientId) return;
     try {
       setIsRefreshing(true);
-      const kParam = typeof kValue === "number" ? `?k=${kValue}` : "";
-      const res = await fetch(`/api/clients/${clientId}/candidates${kParam}`);
-      if (!res.ok) throw new Error("Failed to fetch scored candidates");
-
-      const data = await res.json();
+      const data = await getScoredCandidates(clientId, kValue);
       setCandidatesQueue(data.candidates);
 
       if (typeof kValue !== "number" && typeof data.thresholdK === "number") {
@@ -113,27 +108,25 @@ export default function Home() {
     if (!currentClient) return;
 
     const mmId = currentClient.matchmakerId;
-    const res = await fetch(`/api/matchmakers/${mmId}/threshold`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ threshold: newK }),
-    });
-
-    if (res.ok) {
+    try {
+      await updateMatchmakerThreshold(mmId, newK);
       setMatchmakers((prev) =>
         prev.map((m) => (m.id === mmId ? { ...m, threshold: newK } : m))
       );
       fetchScoredCandidates(selectedClientId, newK);
+    } catch (err: any) {
+      console.error(err);
     }
   };
 
-  const handleFeedbackSaved = () => {
-    fetch("/api/clients")
-      .then((r) => r.json())
-      .then((updatedClients) => {
-        setClients(updatedClients);
-        fetchScoredCandidates(selectedClientId, currentK);
-      });
+  const handleFeedbackSaved = async () => {
+    try {
+      const updatedClients = await getClients();
+      setClients(updatedClients);
+      fetchScoredCandidates(selectedClientId, currentK);
+    } catch (err: any) {
+      console.error(err);
+    }
   };
 
   const selectedClient = clients.find((c) => c.id === selectedClientId);
